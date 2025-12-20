@@ -82,6 +82,7 @@ def build_births() -> pd.DataFrame:
         [births_2019, births_2020, births_21_23, births_2024],
         ignore_index=True,
     )
+    births_all = _normalise_geo(births_all)
     return births_all
 
 
@@ -101,6 +102,7 @@ def build_deaths() -> pd.DataFrame:
         [deaths_2019, deaths_2020, deaths_21_23, deaths_2024],
         ignore_index=True,
     )
+    deaths_all = _normalise_geo(deaths_all)
     return deaths_all
 
 
@@ -120,7 +122,14 @@ def build_active() -> pd.DataFrame:
         [active_2019, active_2020, active_21_23, active_2024],
         ignore_index=True,
     )
+    active_all = _normalise_geo(active_all)
     return active_all
+
+
+def _normalise_geo(df: pd.DataFrame) -> pd.DataFrame:
+    df["geo_code"] = df["geo_code"].astype(str).str.strip()
+    df["geo_name"] = df["geo_name"].astype(str).str.strip()
+    return df
 
 
 def main():
