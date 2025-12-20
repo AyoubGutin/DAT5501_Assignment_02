@@ -2,9 +2,9 @@ from config import DEMOGRAPHY_FILE, PROCESSED_DIR
 import pandas as pd
 
 
-def clean_birth_single_year(sheet_name: str, value_name: str) -> pd.DataFrame:
+def clean_single_year(sheet_name: str, value_name: str) -> pd.DataFrame:
     """
-    Cleans excel sheets 1.1a - d, which represents the births of enterprises each year, by region.
+    Cleans excel sheets 1.1a - d that are single years, which represents the births of enterprises each year, by region.
     It reads a sheet where the third column header is the year and the values are births/deaths/active
 
     :param sheet_name: Sheet name of the excel file
@@ -32,7 +32,7 @@ def clean_birth_single_year(sheet_name: str, value_name: str) -> pd.DataFrame:
     )
     df["year"] = year  # add the current year to a new column year
 
-    return df[["geo_code", "geo_name", value_name, "year"]]
+    return df[["geo_code", "geo_name", "year", value_name]]
 
 
 def clean_multi_year(sheet_name: str, value_name: str) -> pd.DataFrame:
@@ -63,9 +63,20 @@ def clean_multi_year(sheet_name: str, value_name: str) -> pd.DataFrame:
     )
     df["year"] = df["year"].astype(int)
 
-    return df[["geo_code", "geo_name", value_name, "year"]]
+    return df[["geo_code", "geo_name", "year", value_name]]
 
 
-# test
-births_2019 = clean_birth_single_year("Table 1.1a")
-print(births_2019)
+def build_births() -> pd.DataFrame:
+    births_2019 = clean_single_year("Table 1.1a", "births")
+    births_2020 = clean_single_year("Table 1.1b", "births")
+    births_21_23 = clean_multi_year("Table 1.1c", "births")
+    births_2024 = clean_single_year("Table 1.1d", "births")
+
+    births_all = pd.concat(
+        [births_2019, births_2020, births_21_23, births_2024],
+        ignore_index=True,
+    )
+    return births_all
+
+
+births_all = build_births()
