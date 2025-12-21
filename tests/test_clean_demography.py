@@ -1,6 +1,5 @@
 # -- Imports --
 import unittest as ut
-from pathlib import Path
 import pandas as pd
 from src.config import PROCESSED_DIR
 
