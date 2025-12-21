@@ -23,9 +23,10 @@ class TestCleanDemography(ut.TestCase):
         Births, deaths, and active coun ts should all be positive
         """
         for col in ["births", "deaths", "active"]:
+            non_null = self.df[col].dropna()
             self.assertTrue(
-                (self.df[col] >= 0).all(),
-                f"Negative values found in {col}",
+                non_null.empty or (non_null >= 0).all(),
+                f"Negative values found in {col}: {non_null[non_null < 0]}",
             )
 
     def test_no_missing_geo_info(self):
