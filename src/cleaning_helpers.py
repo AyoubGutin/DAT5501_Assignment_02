@@ -104,7 +104,7 @@ def clean_wide_population(
 
     df = pd.melt(
         df,
-        id_vars=["ITL1 Region", "geo_code", "geo_name"],
+        id_vars=["geo_code", "geo_name"],
         value_vars=years_cols,
         var_name="year",
         value_name=value_name,

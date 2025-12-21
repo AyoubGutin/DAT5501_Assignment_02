@@ -11,7 +11,5 @@ PROCESSED_DIR = DATA_DIR / "processed"
 
 # Filenames
 DEMOGRAPHY_FILE = RAW_DIR / "business_demography_2024_ref_tables.xlsx"
-GVA_PATTERN = (
-    RAW_DIR / "regionalgrossvalueadded*.xlsx"
-)  # wildcard becuase of multiple files
+GVA_DIR = RAW_DIR
 POPULATION_FILE = RAW_DIR / "populationestimatesbylocalauthority.xlsx"
