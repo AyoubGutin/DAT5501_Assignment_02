@@ -127,9 +127,31 @@ def build_active() -> pd.DataFrame:
 
 
 def _normalise_geo(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Docstring for _normalise_geo - tdo
+
+    :param df: Description
+    :type df: pd.DataFrame
+    :return: Description
+    :rtype: DataFrame
+    """
     df["geo_code"] = df["geo_code"].astype(str).str.strip()
     df["geo_name"] = df["geo_name"].astype(str).str.strip()
     return df
+
+
+def check_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Docstring for check_duplicates - todo
+
+    :param df: Description
+    :type df: pd.DataFrame
+    :return: Description
+    :rtype: DataFrame
+    """
+    dup_mask = df.duplicated(subset=["geo_code", "year"], keep=False)
+    dup_rows = df[dup_mask].sort_values(["geo_code", "year"])
+    return dup_rows[["geo_code", "geo_name", "year"]]
 
 
 def main():
@@ -143,10 +165,16 @@ def main():
         .sort_values(["geo_code", "year"])
     )
 
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    path = PROCESSED_DIR / "business_demography_counts.csv"
-    demog_counts.to_csv(path, index=False)
-    print(f"Saved {len(demog_counts)} rows to {path}")
+    dup_rows = check_duplicates(demog_counts)
+    if len(dup_rows) > 0:
+        print("Duplicate rows found")
+        print(dup_rows)
+
+    else:
+        PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+        path = PROCESSED_DIR / "business_demography_counts.csv"
+        demog_counts.to_csv(path, index=False)
+        print(f"Saved {len(demog_counts)} rows to {path}")
 
 
 if __name__ == "__main__":

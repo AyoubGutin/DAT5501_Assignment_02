@@ -16,12 +16,12 @@ class TestCleanDemography(ut.TestCase):
         """
         Each geo_code and year combination should appear once
         """
-        duplicates = self.df.duplicated(subset=["geo_code", "year"])
-        self.assertTrue(len(duplicates) == 0, "Duplicates found")
+        dup_mask = self.df.duplicated(subset=["geo_code", "year"])
+        self.assertFalse(dup_mask.any(), "Duplicates found")
 
     def test_non_negative_counts(self):
         """
-        Births, deaths, and active counts should all be positive
+        Births, deaths, and active coun ts should all be positive
         """
         for col in ["births", "deaths", "active"]:
             self.assertTrue(
