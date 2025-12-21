@@ -4,11 +4,11 @@ import pandas as pd
 from src.config import PROCESSED_DIR
 
 
-class TestCleanDemography(ut.TestCase):
+class TestCleanPopulation(ut.TestCase):
     @classmethod
     def setUpClass(cls):
-        path = PROCESSED_DIR / "business_demography_counts.csv"
-        assert path.exists(), f"Processed demography files not found at {path}"
+        path = PROCESSED_DIR / "population.csv"
+        assert path.exists(), f"Processed population files not found at {path}"
         cls.df = pd.read_csv(path)
 
     def test_unique_region_year(self):
@@ -22,12 +22,11 @@ class TestCleanDemography(ut.TestCase):
         """
         Births, deaths, and active counts should all be positive
         """
-        for col in ["births", "deaths", "active"]:
-            non_null = self.df[col].dropna()
-            self.assertTrue(
-                non_null.empty or (non_null >= 0).all(),
-                f"Negative values found in {col}: {non_null[non_null < 0]}",
-            )
+        non_null = self.df["population"].dropna()
+        self.assertTrue(
+            non_null.empty or (non_null >= 0).all(),
+            f"Negative values found in population: {non_null[non_null < 0]}",
+        )
 
     def test_no_missing_geo_info(self):
         """
