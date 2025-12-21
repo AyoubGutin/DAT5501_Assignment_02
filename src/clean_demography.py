@@ -1,5 +1,10 @@
 from config import DEMOGRAPHY_FILE, PROCESSED_DIR
-from cleaning_helpers import clean_single_year, clean_multi_year, normalise_geo
+from cleaning_helpers import (
+    clean_single_year,
+    clean_multi_year,
+    normalise_geo,
+    check_duplicates,
+)
 import pandas as pd
 
 
@@ -121,20 +126,6 @@ def build_active() -> pd.DataFrame:
     )
     active_all = normalise_geo(active_all)
     return active_all
-
-
-def check_duplicates(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Docstring for check_duplicates - todo
-
-    :param df: Description
-    :type df: pd.DataFrame
-    :return: Description
-    :rtype: DataFrame
-    """
-    dup_mask = df.duplicated(subset=["geo_code", "year"], keep=False)
-    dup_rows = df[dup_mask].sort_values(["geo_code", "year"])
-    return dup_rows[["geo_code", "geo_name", "year"]]
 
 
 def main():
