@@ -14,8 +14,30 @@ def merge_all_datasets():
     population = pd.read_csv(PROCESSED_DIR / "population.csv")
     gva = pd.read_csv(PROCESSED_DIR / "gva.csv")
 
-    merged = demography.merge(population, on=["geo_code", "year"], how="inner")
-    merged = merged.merge(gva, on=["geo_code", "year"], how="inner")
+    merged = demography.merge(
+        population[["geo_code", "year", "population", "is_unreliable"]],
+        on=["geo_code", "year"],
+        how="left",
+    )
+    merged = merged.merge(
+        gva[["geo_code", "year", "gva_million"]], on=["geo_code", "year"], how="left"
+    )
+
+    merged = merged[merged["year"].between(2019, 2023)]
+
+    merged = merged[
+        [
+            "geo_code",
+            "geo_name",
+            "year",
+            "births",
+            "deaths",
+            "active",
+            "population",
+            "is_unreliable",
+            "gva_million",
+        ]
+    ]
 
     out_path = PROCESSED_DIR / "final_dataset.csv"
     merged.to_csv(out_path, index=False)
