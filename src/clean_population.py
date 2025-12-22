@@ -27,7 +27,6 @@ def clean_multi_year(
     :type value_name: str
     :return: Cleaned DataFrame
     :rtype: DataFrame
-
     """
     df = pd.read_excel(path_name, sheet_name=sheet_name, header=header)
 
