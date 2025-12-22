@@ -1,6 +1,50 @@
 from config import PROCESSED_DIR, POPULATION_FILE
-from cleaning_helpers import clean_wide_population, normalise_geo, check_duplicates
+from cleaning_helpers import normalise_geo, check_duplicates
 import pandas as pd
+
+
+def clean_wide_population(
+    path_name: str, sheet_name: str, header: int, value_name: str
+) -> pd.DataFrame:
+    """
+    Clean ONS population (named columns, ITL1 Region)
+
+    1) Reads Excel File with passed parameters
+    2) Renames the columns to be normalised with other processed datasets
+    3) Automatically parses the year columns
+    4) Melts from wide to long format so there is only one year column, and the associated values for population in this case
+    5) Then, makes year integer columns, and drops null rows
+
+    :param path_name: Description
+    :type path_name: str
+    :param sheet_name: Description
+    :type sheet_name: str
+    :param header: Description
+    :type header: int
+    :param value_name: Description
+    :type value_name: str
+    :return: Description
+    :rtype: DataFrame
+
+    """
+    df = pd.read_excel(path_name, sheet_name=sheet_name, header=header)
+
+    df = df.rename(columns={"LA code": "geo_code", "LA name": "geo_name"})
+
+    years_cols = [c for c in df.columns if str(c).isdigit() and len(str(c)) == 4]
+
+    df = pd.melt(
+        df,
+        id_vars=["geo_code", "geo_name"],
+        value_vars=years_cols,
+        var_name="year",
+        value_name=value_name,
+    )
+
+    df["year"] = df["year"].astype(int)
+    df = df.dropna(subset=["geo_code", "geo_name"])
+
+    return df[["geo_code", "geo_name", "year", value_name]]
 
 
 def build_population() -> pd.DataFrame:
