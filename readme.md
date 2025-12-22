@@ -7,7 +7,7 @@ All raw data in `data/raw` are from the UK Office for National Statistics (ONS).
 - **Population**: `populationestimatesbylocalauthority.xlsx`
   - [Mid-year population estimates by local authority, 1998–2023.](https://www.ons.gov.uk/economy/grossdomesticproductgdp/datasets/regionalgrossvalueaddedbalancedbyindustrylocalauthoritiesbyitl1region)
 - **GVA**: `regionalgrossvalueaddedbalancedbyindustrylocalauthorities*.xlsx`
-  - [Regional GVA (balanced) by industry and local authority, Table 2 (chained volume measures, 2022 prices, £ millions).](https://www.ons.gov.uk/economy/grossdomesticproduct gdp/datasets/regionalgrossvalueaddedbalancedbyindustrylocalauthoritiesbyitl1region)
+  - [Regional GVA balanced by industry and local authority, Table 2 chained volume measures, £ millions.](https://www.ons.gov.uk/economy/grossdomesticproductgdp/datasets/regionalgrossvalueaddedbalancedbyindustrylocalauthoritiesbyitl1region)
 
 ## Cleaning Pipeline
 
