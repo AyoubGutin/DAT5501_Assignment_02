@@ -7,6 +7,13 @@ from src.config import PROCESSED_DIR
 class TestCleanPopulation(ut.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+        Load processed GVA dataframe, using cls.df so it's attatched to the class and can be accessed using self in tests.
+
+        The classmethod decorator makes this run once for the whole class, as unittest creates a new instance of the class for each test method below
+
+        Runs once before all tests
+        """
         path = PROCESSED_DIR / "population.csv"
         assert path.exists(), f"Processed population files not found at {path}"
         cls.df = pd.read_csv(path)
