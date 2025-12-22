@@ -1,3 +1,4 @@
+# -- Imports --
 from config import DEMOGRAPHY_FILE, PROCESSED_DIR
 from cleaning_helpers import (
     normalise_geo,
@@ -6,30 +7,32 @@ from cleaning_helpers import (
 import pandas as pd
 
 
+# -- Cleaning Functions --
 def clean_single_year(
     path_name: str, sheet_name: str, header: int, value_name: str
 ) -> pd.DataFrame:
     """
-    Cleans excel sheets that are single years by region.
+    Cleans ONS Demographic Excel sheets that are of the format where there is a single year column with values under it.
     It reads a sheet where the third column header is the year and the values are under it.
-
-    Used in:
-    - Business Demographics for birth / active / deaths
 
     :param sheet_name: Sheet name of the excel file
     :type sheet_name: str
-    :param year: Description
+    :param year: Year being processed
     :type year: int
-    :return: Description
+    :param value_name: Name for the values column
+    :type value_name: str
+    :return: Cleaned DataFrame
     :rtype: DataFrame
     """
     df = pd.read_excel(path_name, sheet_name=sheet_name, header=header)
 
+    # Identify columns based on format
     geo_code_col = df.columns[0]
     geo_name_col = df.columns[1]
     year_col = df.columns[2]
     year = int(year_col)
 
+    # Rename columns to standardise names
     df = df.rename(
         columns={
             geo_code_col: "geo_code",
@@ -46,14 +49,19 @@ def clean_multi_year(
     path_name: str, sheet_name: str, header: int, value_name: str
 ) -> pd.DataFrame:
     """
-    Read a sheet where columns 3+ are multiple years (e.g 2021, 2022, 2023)
+    Read ONS Demographic Excel sheets where columns from  3 onwards are multiple years (e.g 2021, 2022, 2023)
 
-    :param sheet_name: Description
+    :param sheet_name: Sheet name of the excel file
     :type sheet_name: str
-    :param value_name: Description
+    :param value_name: Name for the values column
+    :type value_name: str
+
+    :return: Cleaned DataFrame
+    :rtype: DataFrame
     """
     df = pd.read_excel(path_name, sheet_name=sheet_name, header=header)
 
+    # Rename columns to standardise names
     df = df.rename(
         columns={
             df.columns[0]: "geo_code",
@@ -61,12 +69,13 @@ def clean_multi_year(
         }
     )
 
+    # Identify year columns automatically
     years_cols = [c for c in df.columns if str(c).isdigit() and len(str(c)) == 4]
 
-    # change the dataframe from multiple year columns to one year column, with the relevant births/deaths etc as a separate column
+    # change the dataframe from wide to long format (one year column, one values column, repeating geo_code and geo_name as needed)
     df = df.melt(
-        id_vars=["geo_code", "geo_name"],  # identifiers that repeat in every row
-        value_vars=years_cols,  # original year columns that hold value counts, melt stacks into two new columns instead of separate ones
+        id_vars=["geo_code", "geo_name"],
+        value_vars=years_cols,
         var_name="year",  # original column headers become values in a new column called year
         value_name=value_name,  # the values undr the year columns become a single column
     )
@@ -77,9 +86,9 @@ def clean_multi_year(
 
 def build_births() -> pd.DataFrame:
     """
-    Docstring for build_births - todo
+    Builds the births DataFrame by cleaning and combining multiple sheets from the DEMOGRAPHY_FILE.
 
-    :return: Description
+    :return: Cleaned and standardised births DataFrame
     :rtype: DataFrame
     """
     births_2019 = clean_single_year(
@@ -117,9 +126,9 @@ def build_births() -> pd.DataFrame:
 
 def build_deaths() -> pd.DataFrame:
     """
-    Docstring for build_deaths - todo
+    Cleans and combines multiple sheets from the DEMOGRAPHY_FILE to build the deaths DataFrame.
 
-    :return: Description
+    :return: Cleaned and standardised deaths DataFrame
     :rtype: DataFrame
     """
     deaths_2019 = clean_single_year(
@@ -157,9 +166,9 @@ def build_deaths() -> pd.DataFrame:
 
 def build_active() -> pd.DataFrame:
     """
-    Docstring for build_active - todo
+    Cleans and combines multiple sheets from the DEMOGRAPHY_FILE to build the active businesses DataFrame.
 
-    :return: Description
+    :return: Cleaned and standardised active businesses DataFrame
     :rtype: DataFrame
     """
     active_2019 = clean_single_year(
@@ -196,21 +205,29 @@ def build_active() -> pd.DataFrame:
 
 
 def main():
+    """
+    Main function to build and save the combined demography dataset.
+    """
+
+    # Build individual datasets
     births_all = build_births()
     deaths_all = build_deaths()
     active_all = build_active()
 
+    # Merge datasets on geo_code, geo_name, and year
     demog_counts = (
         births_all.merge(deaths_all, on=["geo_code", "geo_name", "year"], how="left")
         .merge(active_all, on=["geo_code", "geo_name", "year"], how="left")
         .sort_values(["geo_code", "year"])
     )
 
+    # Check for duplicates
     dup_rows = check_duplicates(demog_counts)
     if len(dup_rows) > 0:
         print("Duplicate rows found")
         print(dup_rows)
 
+    # Save the cleaned demography counts dataset as a csv file
     else:
         PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
         path = PROCESSED_DIR / "business_demography_counts.csv"
