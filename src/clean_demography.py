@@ -15,10 +15,19 @@ def clean_single_year(
     Cleans ONS Demographic Excel sheets that are of the format where there is a single year column with values under it.
     It reads a sheet where the third column header is the year and the values are under it.
 
+    1) Reads Excel File with passed parameters
+    2) Renames the columns to be normalised with other processed datasets
+    3) Parses the year columns
+    4) Melts from wide to long format so there is only one year column, and the associated values for births/deaths/actives in this case
+    5) Then, makes year integer columns, and drops null rows
+
+
+    :param path_name: File path of the excel file
+    :type path_name: str
     :param sheet_name: Sheet name of the excel file
     :type sheet_name: str
-    :param year: Year being processed
-    :type year: int
+    :param header: Row number to use as the column names
+    :type header: int
     :param value_name: Name for the values column
     :type value_name: str
     :return: Cleaned DataFrame
@@ -41,6 +50,7 @@ def clean_single_year(
         }
     )
     df["year"] = year  # add the current year to a new column year
+    df = df.dropna(subset=["geo_code", "geo_name"])
 
     return df[["geo_code", "geo_name", "year", value_name]]
 
@@ -51,10 +61,22 @@ def clean_multi_year(
     """
     Read ONS Demographic Excel sheets where columns from  3 onwards are multiple years (e.g 2021, 2022, 2023)
 
+    1) Reads Excel File with passed parameters
+    2) Renames the columns to be normalised with other processed datasets
+    3) Automatically parses the year columns
+    4) Melts from wide to long format so there is only one year column, and the associated values for births/deaths/actives in this case
+    5) Then, makes year integer columns, and drops null rows
+
+    :param path_name: File path of the excel file
+    :type path_name: str
     :param sheet_name: Sheet name of the excel file
     :type sheet_name: str
+    :param header: Row number to use as the column names
+    :type header: int
     :param value_name: Name for the values column
     :type value_name: str
+    :return: Cleaned DataFrame
+    :rtype: DataFrame
 
     :return: Cleaned DataFrame
     :rtype: DataFrame
@@ -72,7 +94,7 @@ def clean_multi_year(
     # Identify year columns automatically
     years_cols = [c for c in df.columns if str(c).isdigit() and len(str(c)) == 4]
 
-    # change the dataframe from wide to long format (one year column, one values column, repeating geo_code and geo_name as needed)
+    # Melt from wide to long format
     df = df.melt(
         id_vars=["geo_code", "geo_name"],
         value_vars=years_cols,
@@ -80,13 +102,14 @@ def clean_multi_year(
         value_name=value_name,  # the values undr the year columns become a single column
     )
     df["year"] = df["year"].astype(int)
+    df = df.dropna(subset=["geo_code", "geo_name"])
 
     return df[["geo_code", "geo_name", "year", value_name]]
 
 
 def build_births() -> pd.DataFrame:
     """
-    Builds the births DataFrame by cleaning and combining multiple sheets from the DEMOGRAPHY_FILE.
+    Builds the births DataFrame by cleaning and combining multiple sheets from the DEMOGRAPHY_FILE. Calls the relevant cleaning functions.
 
     :return: Cleaned and standardised births DataFrame
     :rtype: DataFrame
@@ -207,6 +230,9 @@ def build_active() -> pd.DataFrame:
 def main():
     """
     Main function to build and save the combined demography dataset.
+
+    :return: None
+    :rtype: None
     """
 
     # Build individual datasets
