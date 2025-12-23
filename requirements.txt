@@ -4,3 +4,5 @@ pytest
 openpyxl
 statsmodel
 matplotlib
+seaborn
+tabulate
