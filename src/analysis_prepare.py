@@ -1,9 +1,26 @@
 # -- Imports --
 import pandas as pd
-from config import PROCESSED_DIR
+from config import PROCESSED_DIR, RAW_DIR
 
 
-# -- Functions --
+def attach_regions(df: pd.DataFrame) -> pd.DataFrame:
+    lookup = pd.read_excel(RAW_DIR / "lasregionew2021lookup.xlsx", header=4)
+    lookup = lookup.rename(
+        columns={
+            "LA code": "geo_code",
+            "LA name": "geo_name",
+            "Region code": "region_code",
+            "Region name": "region_name",
+        }
+    )
+
+    df = df.merge(
+        lookup[["geo_code", "region_code", "region_name"]], on="geo_code", how="left"
+    )
+
+    return df
+
+
 def build_analysis_dataset() -> pd.DataFrame:
     """
     Builds the analysis dataset from the final merged dataset.
@@ -37,11 +54,12 @@ def build_analysis_dataset() -> pd.DataFrame:
         df["gva_million"] * 1_000_000 / df["active"]
     )  # GVA per active business
 
-    out_path = PROCESSED_DIR / "analysis_dataset.csv"
-    df.to_csv(out_path, index=False)
-    print(f"Saved {len(df)} rows to {out_path}")
+    analysis_df = attach_regions(df)
 
-    return
+    out_path = PROCESSED_DIR / "analysis_dataset.csv"
+    analysis_df.to_csv(out_path, index=False)
+    print(f"Saved {len(analysis_df)} rows to {out_path}")
+    return analysis_df
 
 
 if __name__ == "__main__":

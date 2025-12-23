@@ -90,8 +90,11 @@ def main():
     :rtype: None
     """
     df = pd.read_csv(PROCESSED_DIR / "analysis_dataset.csv")
+    # Remove extreme outliers
     q99 = df["gva_per_capita"].quantile(0.99)
     df_trim = df[df["gva_per_capita"] <= q99].copy()
+    # Filter out unreliable
+    df_trim = df_trim[df_trim["is_unreliable"] == False].copy()
     plot_scatter(df_trim)
     plot_line(df_trim)
 

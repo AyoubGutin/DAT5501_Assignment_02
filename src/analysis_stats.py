@@ -84,10 +84,12 @@ def regression_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     df = pd.read_csv(PROCESSED_DIR / "analysis_dataset.csv")
-    df_gva = df.dropna(subset=["gva_million"]).copy()  # Focus on rows with GVA data
+    df = df.dropna(subset=["gva_million"]).copy()  # Focus on rows with GVA data
     q99 = df["gva_per_capita"].quantile(0.99)
     df_trim = df[df["gva_per_capita"] <= q99].copy()
 
+    # Filter out unreliable
+    df_trim = df_trim[df_trim["is_unreliable"] == False].copy()
     descriptive_stats(df_trim)
     correlation(df_trim)
     regression_summary(df_trim)
