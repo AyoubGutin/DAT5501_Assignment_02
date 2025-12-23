@@ -1,0 +1,26 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:         gva_per_capita   R-squared:                       0.004
+Model:                            OLS   Adj. R-squared:                  0.003
+Method:                 Least Squares   F-statistic:                     3.241
+Date:                Tue, 23 Dec 2025   Prob (F-statistic):             0.0393
+Time:                        20:47:21   Log-Likelihood:                -24972.
+No. Observations:                1727   AIC:                         4.995e+04
+Df Residuals:                    1724   BIC:                         4.997e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       2.089e+05   6.33e+04      3.299      0.001    8.47e+04    3.33e+05
+birth_rate -6795.2227   5406.326     -1.257      0.209   -1.74e+04    3808.427
+death_rate -7831.1689   6131.275     -1.277      0.202   -1.99e+04    4194.352
+==============================================================================
+Omnibus:                     3948.034   Durbin-Watson:                   0.492
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):         15803445.416
+Skew:                          21.362   Prob(JB):                         0.00
+Kurtosis:                     469.684   Cond. No.                         89.5
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
