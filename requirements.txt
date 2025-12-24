@@ -2,7 +2,7 @@ pandas
 numpy
 pytest
 openpyxl
-statsmodel
+statsmodels
 matplotlib
 seaborn
 tabulate
