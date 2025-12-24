@@ -2,3 +2,7 @@ pandas
 numpy
 pytest
 openpyxl
+statsmodels
+matplotlib
+seaborn
+tabulate
