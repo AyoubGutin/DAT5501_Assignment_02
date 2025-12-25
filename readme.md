@@ -1,3 +1,5 @@
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/JfPVvXexjDsR6Mn13tGMb/96ouWL5WpdgvKYRv4P5aKY/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/JfPVvXexjDsR6Mn13tGMb/96ouWL5WpdgvKYRv4P5aKY/tree/main)
+
 ## Data Sources
 
 All raw data in `data/raw` are from the UK Office for National Statistics (ONS).
